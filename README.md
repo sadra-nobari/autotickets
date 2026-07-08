@@ -21,13 +21,13 @@ An intelligent internal operations and support ticket routing system built with 
 Launch an isolated instance of n8n on your local machine by running the following command in your terminal:
 ```bash
 docker run -it --rm --name n8n -p 5678:5678 n8nio/n8n
-
+```
 
 ### 2. Import autoticket.json file in n8n
 
 For using the project you need to import it on your n8n on your machine.
 
-###3. Add API
+### 3. Add API
 
 you need to add your api key in AI Agent settings. 
 
