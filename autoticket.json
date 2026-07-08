@@ -1,0 +1,298 @@
+{
+  "name": "autoticket",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "incoming-tickets",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1c4bb19d-8f14-4090-ac61-d137ac52e6cf",
+      "name": "Webhook",
+      "webhookId": "d9a485b8-2359-4948-92fc-ffda45cb6876"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an expert AI Operations Assistant for  internal ticketing system. Your sole task is to analyze the incoming ticket description, determine its category, assign a priority level, and provide a 1-sentence summary.\n\n### Department Guidelines:\n1. \"IT\": Handles hardware issues (monitors, laptops, mice), network/internet access, software licenses, system permissions, account lockouts, and internal tools failures.\n2. \"HR\": Handles recruitment processes, onboarding/offboarding, leaves of absence, health insurance, contract renewals, workplace culture, and employee relations.\n3. \"Finance\": Handles salary slips, bank transactions, expense reimbursements, tax queries, corporate invoices, and budget approvals.\n\n### Priority Guidelines:\n- \"High\": The issue completely blocks someone from working (e.g., system down, broken laptop, urgent payroll error).\n- \"Medium\": The issue affects daily operations but has a temporary workaround (e.g., software license expired, missing slip for last month).\n- \"Low\": General inquiries, non-urgent requests, or future planning (e.g., questions about next month's hiring process, general feedback).\n\n### Critical Instructions:\n- Reply ONLY with a valid JSON object.\n- DO NOT wrap the response in markdown code blocks like ```json ... ```. \n- Do not include any pre-text, post-text, or explanations outside the JSON.\n\n### Output Structure:\n{\n  \"reasoning\": \"A brief explanation of why this category and priority were chosen based on the guidelines\",\n  \"category\": \"IT\" or \"HR\" or \"Finance\",\n  \"priority\": \"High\" or \"Medium\" or \"Low\",\n  \"summary\": \"A 1-sentence summary of the issue\"\n}\n\n### Input Ticket:\n{{ $json.body.description }} {{ $json.body.description }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "7b35f0ca-c242-40ab-818e-259c5453a70b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "jsCode": "const aiText = $input.item.json.output;\nreturn { json: JSON.parse(aiText) };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        0
+      ],
+      "id": "b51e5226-03e5-4af1-8c76-b15e11e3247a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        -192
+      ],
+      "id": "62c637df-7425-4005-8467-32e4dfc12d9a",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        48
+      ],
+      "id": "a443b4ef-3cad-446d-942b-159f294f1d8b",
+      "name": "No Operation, do nothing1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1056,
+        272
+      ],
+      "id": "41e18177-8234-41e5-80f8-01da3e3fde40",
+      "name": "No Operation, do nothing2"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "IT",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "52f40857-3b8f-407d-af8f-da4b6656db80"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a1122f51-3e58-498b-b125-a6328531172a",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "HR",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c9c390ff-7136-44d1-89de-993664525983",
+                    "leftValue": "={{ $json.category }}",
+                    "rightValue": "Finance",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        0
+      ],
+      "id": "23e116af-9f32-4650-8069-714ba51cb10f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -224,
+        320
+      ],
+      "id": "94aaf38e-df7c-47ad-9b39-bceeb97c3f32",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jo9K03yOL4PQDRMo",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": "deepseek/deepseek-v4-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        192,
+        240
+      ],
+      "id": "2b3d08e8-142c-4be2-9972-817a742822f4",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "WseQFtgKcMMSHNYV",
+          "name": "OpenRouter account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "2ce25644-a9d4-4bfc-8cdd-1ef69bbe6c3a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c79729053d4551971aa97fc2c57e3557d67a7c53040a556e6baf0ea970a5d7fc"
+  },
+  "nodeGroups": [],
+  "id": "DMhcsKwrBuQDwA4A",
+  "tags": []
+}
