@@ -1,10 +1,10 @@
 import time
 import requests
 
-# آدرس تست وب‌هوک n8n خودت رو اینجا بزار
+#your webhook url
 WEBHOOK_URL = "http://localhost:5678/webhook-test/incoming-tickets"
 
-# سناریوهای مختلف تیکت برای تست هوش مصنوعی
+#for testing purposes, you can create a list of test tickets to send to the n8n webhook
 test_tickets = [
     
     {
